@@ -1,0 +1,36 @@
+Package: tabpfn
+Type: Package
+Title: TabPFN for R
+Version: 1.0.0
+Date: 2025-11-25
+Author: Cassio Pagnoncelli <cassiopagnoncelli@gmail.com>
+Maintainer: Cassio Pagnoncelli <cassiopagnoncelli@gmail.com>
+Authors@R:
+    person("Cassio", "Pagnoncelli", , "cassiopagnoncelli@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0000-7114-7008"))
+Description: An R interface to TabPFN, a transformer-based probabilistic neural network for tabular data classification.
+    This package provides tools to utilize TabPFN models for efficient and accurate classification tasks on tabular data.
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 4.4.0)
+Imports:
+    data.table,
+    RcppRoll,
+    tibble,
+    dplyr,
+    magrittr (>= 2.0.3),
+    tidyr,
+    stringr,
+    purrr
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests: 
+    testthat (>= 3.0.0),
+    withr (>= 3.0.0),
+    cyclocomp,
+    MASS,
+    knitr,
+    keras
+Config/testthat/edition: 3

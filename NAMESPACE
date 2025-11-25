@@ -1,0 +1,17 @@
+exportPattern("^[[:alpha:]]+")
+
+importFrom("magrittr", `%>%`)
+
+# Data frames
+import("data.table")
+import("RcppRoll")
+
+import("tibble")
+# import("dplyr")
+importFrom("dplyr", `slice`)
+importFrom("dplyr", `row_number`)
+import("tidyr")
+import("stringr")
+
+# Charting: ggplot2, ggfortify, MASS
+importFrom("MASS", `truehist`)
