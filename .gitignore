@@ -54,3 +54,7 @@ tmp/*
 .DS_Store
 
 builds/
+
+.venv/
+
+.hf_token
