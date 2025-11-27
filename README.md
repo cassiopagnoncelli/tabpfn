@@ -318,14 +318,6 @@ This package is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 
 ---
 
-## 👤 Author
-
-**Cassio Pagnoncelli**  
-📧 cassiopagnoncelli@gmail.com  
-🔗 [ORCID: 0009-0000-7114-7008](https://orcid.org/0009-0000-7114-7008)
-
----
-
 <p align="center">
   <i>Built with ❤️ using R and Python</i>
 </p>
