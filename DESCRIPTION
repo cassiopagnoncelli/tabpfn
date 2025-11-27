@@ -10,7 +10,7 @@ Authors@R:
            comment = c(ORCID = "0009-0000-7114-7008"))
 Description: An R interface to TabPFN, a transformer-based probabilistic neural network for tabular data classification.
     This package provides tools to utilize TabPFN models for efficient and accurate classification tasks on tabular data.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:
