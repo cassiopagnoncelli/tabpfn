@@ -1,6 +1,6 @@
 #' Fit a TabPFN classifier via reticulate
 #'
-#' @importFrom stats fitted predict
+#' @importFrom stats fitted nobs predict
 #' @param x A data frame or matrix of predictors.
 #' @param y A vector or factor of class labels (same length as `nrow(x)`).
 #' @param device Device passed to the Python `TabPFNClassifier` (e.g., `"cpu"` or `"cuda"`). Defaults to `"cpu"`.
@@ -155,6 +155,40 @@ residuals.tabpfn_model <- function(object, ...) {
 summary.tabpfn_model <- function(object, ...) {
   class_counts <- if (!is.null(object$training_y)) table(object$training_y) else NULL
   n_obs <- if (!is.null(object$training_y)) length(object$training_y) else NA_integer_
+  preds <- object$fitted
+  if (is.null(preds) && !is.null(object$training_data)) {
+    preds <- tryCatch(
+      predict(object, newdata = object$training_data, type = "class"),
+      error = function(e) NULL
+    )
+  }
+
+  accuracy <- if (!is.null(preds) && !is.null(object$training_y)) {
+    mean(preds == object$training_y)
+  } else {
+    NA_real_
+  }
+
+  confusion <- if (!is.null(preds) && !is.null(object$training_y)) {
+    table(
+      predicted = factor(preds, levels = object$levels),
+      observed = factor(object$training_y, levels = object$levels)
+    )
+  } else {
+    NULL
+  }
+
+  prob_summary <- NULL
+  if (!is.null(object$fitted_prob)) {
+    prob_summary <- apply(object$fitted_prob, 2, summary)
+    if (is.null(dim(prob_summary))) {
+      prob_summary <- matrix(
+        prob_summary,
+        ncol = 1L,
+        dimnames = list(names(prob_summary), colnames(object$fitted_prob))
+      )
+    }
+  }
 
   out <- list(
     call = object$call,
@@ -163,6 +197,9 @@ summary.tabpfn_model <- function(object, ...) {
     n_features = object$n_features,
     class_levels = object$levels,
     class_counts = class_counts,
+    training_accuracy = accuracy,
+    confusion = confusion,
+    prob_summary = prob_summary,
     has_probabilities = !is.null(object$fitted_prob)
   )
   class(out) <- "summary.tabpfn_model"
@@ -174,12 +211,28 @@ summary.tabpfn_model <- function(object, ...) {
 #' @rdname tabpfn
 print.tabpfn_model <- function(x, ...) {
   cat("TabPFN model\n")
+  if (!is.null(x$call)) {
+    cat("Call:\n")
+    print(x$call)
+  }
+  obs <- nobs(x)
+  if (!is.na(obs)) {
+    cat("Observations:", obs, "\n")
+  }
   if (!is.null(x$n_features)) {
     cat("Features:", x$n_features, "\n")
+  }
+  if (!is.null(x$levels)) {
+    cat("Classes:", paste(x$levels, collapse = ", "), "\n")
   }
   if (!is.null(x$params$device)) {
     cat("Device:", x$params$device, "\n")
   }
+  if (!is.null(x$params$n_estimators)) {
+    cat("Estimators:", x$params$n_estimators, "\n")
+  }
+  cat("Fitted values stored:", if (!is.null(x$fitted)) "yes" else "no", "\n")
+  cat("Probabilities stored:", if (!is.null(x$fitted_prob)) "yes" else "no", "\n")
   invisible(x)
 }
 
@@ -198,9 +251,23 @@ print.summary.tabpfn_model <- function(x, ...) {
   if (!is.null(x$n_features)) {
     cat("Features:", x$n_features, "\n")
   }
+  if (!is.null(x$class_levels)) {
+    cat("Classes:", paste(x$class_levels, collapse = ", "), "\n")
+  }
   if (!is.null(x$class_counts)) {
     cat("Class distribution:\n")
     print(x$class_counts)
+  }
+  if (!is.null(x$training_accuracy) && !is.na(x$training_accuracy)) {
+    cat("Training accuracy:", sprintf("%.3f", x$training_accuracy), "\n")
+  }
+  if (!is.null(x$confusion)) {
+    cat("\nConfusion matrix (predicted x observed):\n")
+    print(x$confusion)
+  }
+  if (!is.null(x$prob_summary)) {
+    cat("\nProbability summary (per class):\n")
+    print(x$prob_summary)
   }
   cat("Probabilities stored:", if (isTRUE(x$has_probabilities)) "yes" else "no", "\n")
   invisible(x)
@@ -231,6 +298,16 @@ plot.tabpfn_model <- function(x, ...) {
 coef.tabpfn_model <- function(object, ...) {
   warning("TabPFN does not expose coefficients; returning an empty vector.", call. = FALSE)
   numeric(0)
+}
+
+#' @export
+#' @method nobs tabpfn_model
+#' @rdname tabpfn
+nobs.tabpfn_model <- function(object, ...) {
+  if (is.null(object$training_y)) {
+    return(NA_integer_)
+  }
+  length(object$training_y)
 }
 
 prepare_newdata <- function(object, newdata) {

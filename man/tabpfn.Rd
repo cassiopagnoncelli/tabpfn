@@ -10,6 +10,7 @@
 \alias{print.summary.tabpfn_model}
 \alias{plot.tabpfn_model}
 \alias{coef.tabpfn_model}
+\alias{nobs.tabpfn_model}
 \title{Fit a TabPFN classifier via reticulate}
 \usage{
 tabpfn(
@@ -38,6 +39,8 @@ tabpfn(
 \method{plot}{tabpfn_model}(x, ...)
 
 \method{coef}{tabpfn_model}(object, ...)
+
+\method{nobs}{tabpfn_model}(object, ...)
 }
 \arguments{
 \item{x}{A data frame or matrix of predictors.}

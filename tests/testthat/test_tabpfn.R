@@ -67,6 +67,7 @@ test_that("tabpfn fits and predicts with stubbed python", {
     expect_s3_class(model, "tabpfn_model")
     expect_equal(model$levels, levels(y))
     expect_equal(model$params$seed, 11)
+    expect_equal(nobs(model), length(y))
     expect_equal(fitted(model), factor(preds, levels = levels(y)))
     expect_equal(predict(model, x, type = "class"), factor(preds, levels = levels(y)))
     expect_identical(residuals(model), c(0, 0, 0))
@@ -74,6 +75,12 @@ test_that("tabpfn fits and predicts with stubbed python", {
     prob <- predict(model, x, type = "prob")
     expect_equal(prob, prob_mat)
     expect_equal(colnames(prob), levels(y))
+
+    s <- summary(model)
+    expect_equal(s$training_accuracy, 1)
+    expect_true(is.matrix(s$prob_summary))
+    expect_equal(colnames(s$prob_summary), levels(y))
+    expect_equal(dim(s$confusion), c(length(levels(y)), length(levels(y))))
   })
 })
 
@@ -88,8 +95,11 @@ test_that("summary, plot, and coef behave", {
     s <- summary(model)
     expect_s3_class(s, "summary.tabpfn_model")
     expect_equal(s$n_obs, 2)
+    expect_equal(s$training_accuracy, 1)
     expect_false(isTRUE(s$has_probabilities))
+    expect_null(s$prob_summary)
     expect_output(print(s), "TabPFN model summary")
+    expect_output(print(model), "Observations")
 
     tmp <- tempfile(fileext = ".pdf")
     grDevices::pdf(tmp)
@@ -99,6 +109,12 @@ test_that("summary, plot, and coef behave", {
 
     expect_warning(coef_val <- coef(model), "does not expose")
     expect_identical(coef_val, numeric(0))
+
+    model_no_retained <- tabpfn(x, y, return_fitted = FALSE)
+    expect_true(is.na(nobs(model_no_retained)))
+    s_no <- summary(model_no_retained)
+    expect_true(is.na(s_no$training_accuracy))
+    expect_null(s_no$confusion)
   })
 })
 

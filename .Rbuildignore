@@ -16,3 +16,5 @@
 ^rd$
 ^AGENTS\.md$
 .venv
+^\.hf_token$
+^\.vscode$

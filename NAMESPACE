@@ -2,6 +2,7 @@
 
 S3method(coef,tabpfn_model)
 S3method(fitted,tabpfn_model)
+S3method(nobs,tabpfn_model)
 S3method(plot,tabpfn_model)
 S3method(predict,tabpfn_model)
 S3method(print,summary.tabpfn_model)
@@ -12,4 +13,5 @@ export(tabpfn)
 export(tabpfn_available)
 export(tabpfn_init)
 importFrom(stats,fitted)
+importFrom(stats,nobs)
 importFrom(stats,predict)
