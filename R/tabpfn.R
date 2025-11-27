@@ -1,5 +1,6 @@
 #' Fit a TabPFN classifier via reticulate
 #'
+#' @importFrom stats fitted predict
 #' @param x A data frame or matrix of predictors.
 #' @param y A vector or factor of class labels (same length as `nrow(x)`).
 #' @param device Device passed to the Python `TabPFNClassifier` (e.g., `"cpu"` or `"cuda"`). Defaults to `"cpu"`.
@@ -92,6 +93,10 @@ tabpfn_available <- function() {
   py_module_available_safe("tabpfn")
 }
 
+#' @param object A fitted `tabpfn_model` object.
+#' @param newdata Optional data frame or matrix with the same structure as the training data.
+#'   If `NULL`, uses training data.
+#' @param type Character; either `"class"` for predicted classes or `"prob"` for predicted probabilities.
 #' @export
 #' @method predict tabpfn_model
 #' @rdname tabpfn

@@ -57,6 +57,13 @@ Column indices are translated to zero-based indices expected by Python.}
 \code{fitted()}, \code{plot()}, and \code{summary()}.}
 
 \item{...}{Additional arguments reserved for future expansion.}
+
+\item{object}{A fitted \code{tabpfn_model} object.}
+
+\item{newdata}{Optional data frame or matrix with the same structure as the training data.
+If \code{NULL}, uses training data.}
+
+\item{type}{Character; either \code{"class"} for predicted classes or \code{"prob"} for predicted probabilities.}
 }
 \value{
 An object of class \code{tabpfn_model}.
